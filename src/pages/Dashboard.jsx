@@ -28,7 +28,7 @@ const Dashboard = () => {
     };
 
     try {
-      const response = await axios.get("http://localhost:3000/api/v1/dashboard", axiosConfig);
+      const response = await axios.get(import.meta.env.VITE_APP_API+"/api/v1/dashboard", axiosConfig);
       setData({ msg: response.data.msg, luckyNumber: response.data.secret });
     } catch (error) {
       toast.error(error.message);
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/v1/images");
+      const response = await axios.get(import.meta.env.VITE_APP_API+"/api/v1/images");
       setImages(response.data);
     } catch (error) {
       toast.error(error.message);
@@ -47,7 +47,7 @@ const Dashboard = () => {
   const incrementViews = async (id) => {
     try {
       console.log(id);
-      await axios.put(`http://localhost:3000/api/v1/images/${id}`);
+      await axios.put(import.meta.env.VITE_APP_API+`/api/v1/images/${id}`);
       // Refresh the images to get the updated view counts
       fetchImages();
     } catch (error) {
@@ -68,7 +68,7 @@ const Dashboard = () => {
     );
     try {
       console.log(selectedFile)
-      await axios.post("http://localhost:3000/api/v1/images", formData);
+      await axios.post(import.meta.env.VITE_APP_API+"/api/v1/images", formData);
       console.log("File Uploaded");
       // Refresh the images to get the new image
       fetchImages();
