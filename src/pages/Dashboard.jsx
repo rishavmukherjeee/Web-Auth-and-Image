@@ -3,38 +3,37 @@ import "../styles/Dashboard.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchImages } from './Slice';
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const images = useSelector((state) => state.images);
+
+  useEffect(() => {
+    dispatch(fetchImages());
+  }, [dispatch]);
+
+
+
   const [token, setToken] = useState(JSON.parse(localStorage.getItem("auth")) || "");
   const [data, setData] = useState({});
-  const [images, setImages] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [imgtitle, setImgtitle] = useState("");
+  const [imgdesc, setImgdesc] = useState("");
   const navigate = useNavigate();
 
   const openImage = (image) => {
-    incrementViews(image._id);
+    
     setSelectedImage(image);
+    incrementViews(image._id);
   }
 
   const closeImage = () => {
     setSelectedImage(null);
   }
-  const fetchLuckyNumber = async () => {
-    let axiosConfig = {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    };
 
-    try {
-      const response = await axios.get(import.meta.env.VITE_APP_API+"/api/v1/dashboard", axiosConfig);
-      setData({ msg: response.data.msg, luckyNumber: response.data.secret });
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
+/*
   const fetchImages = async () => {
     try {
       const response = await axios.get(import.meta.env.VITE_APP_API+"/api/v1/images");
@@ -43,13 +42,13 @@ const Dashboard = () => {
       toast.error(error.message);
     }
   }
-
+*/
   const incrementViews = async (id) => {
     try {
       console.log(id);
       await axios.put(import.meta.env.VITE_APP_API+`/api/v1/images/${id}`);
       // Refresh the images to get the updated view counts
-      fetchImages();
+      
     } catch (error) {
       toast.error(error.message);
     }
@@ -64,7 +63,9 @@ const Dashboard = () => {
     formData.append(
       "image",
       selectedFile,
-      selectedFile.name
+      selectedFile.name,
+      imgtitle,
+      imgdesc
     );
     try {
       console.log(selectedFile)
@@ -78,7 +79,6 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchLuckyNumber();
     fetchImages();
     if(token === ""){
       navigate("/login");
@@ -89,11 +89,12 @@ const Dashboard = () => {
   return (
     <div className='dashboard-main'>
       <h1>Dashboard</h1>
-      <p>Hi { data.msg }! { data.luckyNumber }</p>
+      <p>Hi { data.msg }! Reload to get Current view count</p>
       
         <div className='image-upload'>
         <input type="file" onChange={onFileChange} />
-        
+        <input type="text" placeholder="Enter Title" onChange={setImgtitle}/>
+        <input type="text" placeholder="Enter Image Description" onChange={setImgdesc} />
         <button className="but" onClick={onFileUpload}>Upload!</button>
         </div>
         <div>
@@ -101,6 +102,8 @@ const Dashboard = () => {
         {images.map(image => (
           <><div className="image-container" key={image._id}>
           <img src={image.url} onClick={() => openImage(image)} />
+          <p>Title: {image.title||"No title"}</p>
+          <p>Description: {image.description||"No description"}</p>
           <p>Views: {image.views}</p>
         </div></>
           
