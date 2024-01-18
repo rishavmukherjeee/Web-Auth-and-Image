@@ -67,6 +67,7 @@ const Dashboard = () => {
       imgtitle,
       imgdesc
     );
+    console.log(formData)
     try {
       console.log(selectedFile)
       await axios.post(import.meta.env.VITE_APP_API+"/api/v1/images", formData);
@@ -93,8 +94,9 @@ const Dashboard = () => {
       
         <div className='image-upload'>
         <input type="file" onChange={onFileChange} />
-        <input type="text" placeholder="Enter Title" onChange={setImgtitle}/>
-        <input type="text" placeholder="Enter Image Description" onChange={setImgdesc} />
+        <input type="text" placeholder="Enter Title" onChange={e => setImgtitle(e.target.value)}/>
+        <input type="text" placeholder="Enter Image Description" onChange={e => setImgdesc(e.target.value)} />
+
         <button className="but" onClick={onFileUpload}>Upload!</button>
         </div>
         <div>
