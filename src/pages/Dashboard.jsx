@@ -60,24 +60,24 @@ const Dashboard = () => {
 
   const onFileUpload = async () => {
     const formData = new FormData();
-    formData.append(
-      "image",
-      selectedFile,
-      selectedFile.name,
-      imgtitle,
-      imgdesc
-    );
+    formData.append("image", selectedFile, selectedFile.name);
+    formData.append("title", imgtitle);
+    formData.append("description", imgdesc);
+    
     console.log(formData)
+    
     try {
       console.log(selectedFile)
       await axios.post(import.meta.env.VITE_APP_API+"/api/v1/images", formData);
       console.log("File Uploaded");
+      toast.success("File Uploaded");
       // Refresh the images to get the new image
-      fetchImages();
+      dispatch(fetchImages());
     } catch (error) {
       toast.error(error.message);
     }
   };
+  
 
   useEffect(() => {
     fetchImages();
